@@ -1,0 +1,16 @@
+{
+  "name": "learn-vue-source",
+  "version": "1.0.0",
+  "description": "帮助自己研究源码",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "vue"
+  ],
+  "author": "york",
+  "license": "ISC",
+  "dependencies": {
+    "vue": "^2.5.21"
+  }
+}
