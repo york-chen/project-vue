@@ -1,7 +1,11 @@
 const path = require('path');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-    mode: "development", // "production" | "development" | "none"  // Chosen mode tells webpack to use its built-in optimizations accordingly.
+    mode: "production", // "production" | "development" | "none"  // Chosen mode tells webpack to use its built-in optimizations accordingly.
     entry: "./src/index", // string | object | array  // defaults to './src'
     // Here the application starts executing
     // and webpack starts bundling
@@ -10,99 +14,97 @@ module.exports = {
         path: path.resolve(__dirname, "dist"), // string
         // the target directory for all output files
         // must be an absolute path (use the Node.js path module)
-        filename: "bundle.js", // string
-        filename: "[name].js", // for multiple entry points
-        filename: "[chunkhash].js", // for long term caching
+        filename: "app.js", // string
         // the filename template for entry chunks
-        publicPath: "/assets/", // string    // the url to the output directory resolved relative to the HTML page
-        library: "MyLibrary", // string,
-        // the name of the exported library
-        libraryTarget: "umd", // universal module definition    // the type of the exported library
-        /* Advanced output configuration (click to show) */  },
+        // publicPath: "/dist", // string    // the url to the output directory resolved relative to the HTML page
+    },
     module: {
         // configuration regarding modules
         rules: [
             // rules for modules (configure loaders, parser options, etc.)
             {
-                test: /\.jsx?$/,
+                test: /\.vue$/,
                 include: [
-                    path.resolve(__dirname, "app")
+                    path.resolve(__dirname, "src")
                 ],
-                exclude: [
-                    path.resolve(__dirname, "app/demo-files")
-                ],
-                // these are matching conditions, each accepting a regular expression or string
-                // test and include have the same behavior, both must be matched
-                // exclude must not be matched (takes preference over test and include)
-                // Best practices:
-                // - Use RegExp only in test and for filename matching
-                // - Use arrays of absolute paths in include and exclude
-                // - Try to avoid exclude and prefer include
-                issuer: { test, include, exclude },
-                // conditions for the issuer (the origin of the import)
-                enforce: "pre",
-                enforce: "post",
                 // flags to apply these rules, even if they are overridden (advanced option)
-                loader: "babel-loader",
-                // the loader which should be applied, it'll be resolved relative to the context
-                // -loader suffix is no longer optional in webpack2 for clarity reasons
-                // see webpack 1 upgrade guide
+                loader: "vue-loader",
+                // options for the loader
                 options: {
-                    presets: ["es2015"]
-                },
+                    transformAssetUrls: {
+                        video: ['src', 'poster'],
+                        source: 'src',
+                        img: 'src',
+                        image: 'xlink:href'
+                    }
+                }
+            },
+            {
+                test: /\.js$/,
+                include: [
+                    path.resolve(__dirname, "src")
+                ],
+                // flags to apply these rules, even if they are overridden (advanced option)
+                loader: "babel-loader"
                 // options for the loader
             },
             {
-                test: /\.html$/,
+                test: /\.(png|jpe?g|gif|svg)$/,
+                include: [
+                    path.resolve(__dirname, "src")
+                ],
+                // flags to apply these rules, even if they are overridden (advanced option)
+                loader: "url-loader",
+                // options for the loader
+                options: {
+                    limit: 10000
+                }
+            },
+            {
+                test: /\.css$/,
                 use: [
-                    // apply multiple loaders and options
-                    "htmllint-loader",
-                    {
-                        loader: "html-loader",
-                        options: {
-                            /* ... */
-                        }
-                    }
+                    MiniCssExtractPlugin.loader,
+                    'css-loader'
                 ]
             },
-            { oneOf: [ /* rules */ ] },
-            // only use one of these nested rules
-            { rules: [ /* rules */ ] },
-            // use all of these nested rules (combine with conditions to be useful)
-            { resource: { and: [ /* conditions */ ] } },
-            // matches only if all conditions are matched
-            { resource: { or: [ /* conditions */ ] } },
-            { resource: [ /* conditions */ ] },
-            // matches if any condition is matched (default for arrays)
-            { resource: { not: /* condition */ } }
-            // matches if the condition is not matched
+            {
+                test: /\.scss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'sass-loader'
+                ]
+            }
         ],
-        /* Advanced module configuration (click to show) */  },
+        /* Advanced module configuration (click to show) */
+    },
     resolve: {
         // options for resolving module requests
         // (does not apply to resolving to loaders)
         modules: [
-            "node_modules",
-            path.resolve(__dirname, "src")
+            path.resolve(__dirname, "src"),
+            "node_modules"
         ],
         // directories where to look for modules
-        extensions: [".js"],
+        extensions: [".js", ".vue"],
         // extensions that are used
         alias: {
             // a list of module name aliases
-            "@": "src"
+            "@": "src",
+            'vue$': 'vue/dist/vue.esm.js',
         },
         /* alternative alias syntax (click to show) */
-        /* Advanced resolve configuration (click to show) */  },
+        /* Advanced resolve configuration (click to show) */
+    },
     performance: {
         hints: "warning", // enum    maxAssetSize: 200000, // int (in bytes),
-        maxEntrypointSize: 400000, // int (in bytes)
-        assetFilter: function(assetFilename) {
+        maxEntrypointSize: 200000, // int (in bytes)
+        assetFilter: function (assetFilename) {
             // Function predicate that provides asset filenames
-            return assetFilename.endsWith('.css') || assetFilename.endsWith('.js');
+            return assetFilename.endsWith('.js');
         }
     },
-    devtool: "source-map", // enum  // enhance debugging by adding meta info for the browser devtools
+    devtool: "inline-source-map", // enum  // enhance debugging by adding meta info for the browser devtools
     // source-map most detailed at the expense of build speed.
     context: __dirname, // string (absolute path!)
     // the home directory for webpack
@@ -110,7 +112,6 @@ module.exports = {
     //   is resolved relative to this directory
     target: "web", // enum  // the environment in which the bundle should run
     // changes chunk loading behavior and available modules
-    externals: ["react", /^@angular\//],  // Don't follow/bundle these modules, but request them at runtime from the environment
     serve: { //object
         port: 1337,
         content: './dist',
@@ -122,16 +123,27 @@ module.exports = {
         proxy: { // proxy URLs to backend development server
             '/api': 'http://localhost:3000'
         },
-        contentBase: path.join(__dirname, 'public'), // boolean | string | array, static file location
+        port: 3000,
+        contentBase: path.join(__dirname, './dist'), // boolean | string | array, static file location
         compress: true, // enable gzip compression
         historyApiFallback: true, // true for index.html upon 404, object for multiple paths
         hot: true, // hot module replacement. Depends on HotModuleReplacementPlugin
         https: false, // true for self-signed, object for cert authority
         noInfo: true, // only errors & warns on hot reload
+        // publicPath: 'http://localhost:3000/dist/'
         // ...
     },
     plugins: [
-        // ...
-    ],
+        new VueLoaderPlugin(),
+        new MiniCssExtractPlugin({
+            filename: 'app.css'
+        }),
+        new HtmlWebpackPlugin({
+            title: 'Development',
+            template: 'index.html'
+        }),
+        new webpack.HotModuleReplacementPlugin()
+    ]
     // list of additional plugins
-    /* Advanced configuration (click to show) */}
+    /* Advanced configuration (click to show) */
+}

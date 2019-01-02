@@ -1,7 +1,12 @@
 <template>
-    <p></p>
+    <p>32323</p>
 </template>
-<sctipt>
-    module.exports = {
+<script>
+    export default {
+        methods: {
+            c() {
+
+            }
+        }
     }
-</sctipt>
+</script>
