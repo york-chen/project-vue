@@ -63,14 +63,18 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    process.env.NODE_ENV !== 'production'
+                        ? 'vue-style-loader'
+                        : MiniCssExtractPlugin.loader,
                     'css-loader'
                 ]
             },
             {
                 test: /\.scss$/,
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    process.env.NODE_ENV !== 'production'
+                        ? 'vue-style-loader'
+                        : MiniCssExtractPlugin.loader,
                     'css-loader',
                     'sass-loader'
                 ]
@@ -144,6 +148,4 @@ module.exports = {
         }),
         new webpack.HotModuleReplacementPlugin()
     ]
-    // list of additional plugins
-    /* Advanced configuration (click to show) */
-}
+};

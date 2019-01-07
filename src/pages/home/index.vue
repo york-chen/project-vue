@@ -1,11 +1,16 @@
 <template>
-    <p>32323</p>
+    <p>
+        hello gays!
+        <span>{{users.age}}!</span>
+    </p>
 </template>
 <script>
     export default {
-        methods: {
-            c() {
-
+        props: {
+            users: {
+                type: Object,
+                require: true,
+                default: {name: 'york'}
             }
         }
     }
