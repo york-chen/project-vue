@@ -2,7 +2,10 @@ const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-// const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const HappyPack = require('happypack');
+const os = require('os');
+const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
 
 module.exports = {
     mode: "development", // "production" | "development" | "none"  // Chosen mode tells webpack to use its built-in optimizations accordingly.
@@ -37,6 +40,9 @@ module.exports = {
                         source: 'src',
                         img: 'src',
                         image: 'xlink:href'
+                    },
+                    loaders: {
+                        js: 'happypack/loader?id=babel'
                     }
                 }
             },
@@ -47,7 +53,7 @@ module.exports = {
                 ],
                 exclude: /node_modules/,
                 // flags to apply these rules, even if they are overridden (advanced option)
-                loader: "babel-loader"
+                use: "happypack/loader?id=babel"
                 // options for the loader
             },
             {
@@ -128,12 +134,12 @@ module.exports = {
         https: false, // true for self-signed, object for cert authority
         noInfo: true, // only errors & warns on hot reload
         open: true,
-        openPage: 'different/page'
+        openPage: ''
         // publicPath: 'http://localhost:3000/dist/'
         // ...
     },
     plugins: [
-        // new BundleAnalyzerPlugin({analyzerPort: 8919}),
+        new BundleAnalyzerPlugin({analyzerPort: 8919}),
         new VueLoaderPlugin(),
         new webpack.DllReferencePlugin({
             manifest: require(path.join(__dirname, '..', 'vendor1-manifest.json'))
@@ -142,9 +148,18 @@ module.exports = {
             title: 'vue学习',
             filename: 'index.html',
             template: './dist/template.html',
-            inject: 'body',
-            hash: true
+            inject: 'body'
         }),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new HappyPack({
+            //用id来标识 happypack处理那里类文件
+            id: 'babel',
+            //如何处理  用法和loader 的配置一样
+            loaders: ['babel-loader?cacheDirectory=true'],
+            //共享进程池
+            threadPool: happyThreadPool,
+            //允许 HappyPack 输出日志
+            verbose: true,
+        })
     ]
 };

@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const path = require('path');
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -17,26 +16,12 @@ module.exports = {
         library: "[name]_[chunkHash]",
         publicPath: '/'
     },
-    module: {
-        rules: [
-            {
-                test: /\.vue$/,
-                use: ["vue-loader"]
-            },
-            {
-                test: /\.js$/,
-                use: ["babel-loader"]
-            },
-
-        ],
-    },
     resolve: {
         alias: {
             'vue$': 'vue/dist/vue.esm.js'
         }
     },
     plugins: [
-        new VueLoaderPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('development')
         }),
@@ -49,8 +34,7 @@ module.exports = {
             title: 'webpack模板',
             filename: 'template.html',
             template: 'index.html',
-            inject: 'body',
-            hash: true
+            inject: 'body'
         }),
     ]
 };

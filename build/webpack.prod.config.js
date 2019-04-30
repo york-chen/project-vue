@@ -3,7 +3,10 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
-// const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const HappyPack = require('happypack');
+const os = require('os');
+const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
 module.exports = {
     mode: "production", // "production" | "development" | "none"  // Chosen mode tells webpack to use its built-in optimizations accordingly.
@@ -37,6 +40,9 @@ module.exports = {
                         source: 'src',
                         img: 'src',
                         image: 'xlink:href'
+                    },
+                    loaders: {
+                        js: 'happypack/loader?id=babel'
                     }
                 }
             },
@@ -46,7 +52,7 @@ module.exports = {
                     path.resolve(__dirname, "../src")
                 ],
                 // flags to apply these rules, even if they are overridden (advanced option)
-                loader: "babel-loader"
+                use: "happypack/loader?id=babel"
                 // options for the loader
             },
             {
@@ -105,7 +111,7 @@ module.exports = {
             return assetFilename.endsWith('.js');
         }
     },
-    devtool: "inline-source-map", // enum  // enhance debugging by adding meta info for the browser devtools
+    devtool: false, // enum  // enhance debugging by adding meta info for the browser devtools
     // source-map most detailed at the expense of build speed.
     context: path.resolve(__dirname, '../'), // string (absolute path!)
     // the home directory for webpack
@@ -129,7 +135,7 @@ module.exports = {
         // ...
     },
     plugins: [
-        // new BundleAnalyzerPlugin({analyzerPort: 8919}),
+        new BundleAnalyzerPlugin({analyzerPort: 8919}),
         new VueLoaderPlugin(),
         new webpack.DllReferencePlugin({
             manifest: require(path.join(__dirname, '..', 'vendor1-manifest.json')),
@@ -141,10 +147,19 @@ module.exports = {
             title: 'Development',
             filename: "index.html",
             template: './dist/template.html',
-            hash: true,
             minify: {
                 removeAttributeQuotes: true//压缩 去掉引号
             }
+        }),
+        new HappyPack({
+            //用id来标识 happypack处理那里类文件
+            id: 'babel',
+            //如何处理  用法和loader 的配置一样
+            loaders: ['babel-loader?cacheDirectory=true'],
+            //共享进程池
+            threadPool: happyThreadPool,
+            //允许 HappyPack 输出日志
+            verbose: true,
         })
     ]
 };

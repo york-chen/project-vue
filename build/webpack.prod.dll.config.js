@@ -21,6 +21,7 @@ module.exports = {
             'vue$': 'vue/dist/vue.esm.js'
         }
     },
+    devtool: false,
     plugins: [
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('production')//告诉react全家桶,目前是生产环境,不必要的代码就省略掉
@@ -35,7 +36,6 @@ module.exports = {
             filename: 'template.html',
             template: 'index.html',
             inject: 'body',
-            hash: true,
             minify: {
                 removeAttributeQuotes: true//压缩 去掉引号
             }

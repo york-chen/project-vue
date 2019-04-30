@@ -29,7 +29,7 @@
     }
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
     p {
         color: red;
     }
