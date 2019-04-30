@@ -2,6 +2,7 @@ const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+// const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
 module.exports = {
     mode: "development", // "production" | "development" | "none"  // Chosen mode tells webpack to use its built-in optimizations accordingly.
@@ -26,6 +27,7 @@ module.exports = {
                 include: [
                     path.resolve(__dirname, "../src")
                 ],
+                exclude: /node_modules/,
                 // flags to apply these rules, even if they are overridden (advanced option)
                 loader: "vue-loader",
                 // options for the loader
@@ -43,6 +45,7 @@ module.exports = {
                 include: [
                     path.resolve(__dirname, "../src")
                 ],
+                exclude: /node_modules/,
                 // flags to apply these rules, even if they are overridden (advanced option)
                 loader: "babel-loader"
                 // options for the loader
@@ -52,6 +55,7 @@ module.exports = {
                 include: [
                     path.resolve(__dirname, "../src")
                 ],
+                exclude: /node_modules/,
                 // flags to apply these rules, even if they are overridden (advanced option)
                 loader: "url-loader",
                 // options for the loader
@@ -61,6 +65,10 @@ module.exports = {
             },
             {
                 test: /\.css$/,
+                include: [
+                    path.resolve(__dirname, "../src")
+                ],
+                exclude: /node_modules/,
                 use: [
                     'vue-style-loader',
                     'css-loader'
@@ -68,6 +76,10 @@ module.exports = {
             },
             {
                 test: /\.scss$/,
+                include: [
+                    path.resolve(__dirname, "../src")
+                ],
+                exclude: /node_modules/,
                 use: [
                     'vue-style-loader',
                     'css-loader',
@@ -95,14 +107,6 @@ module.exports = {
         /* alternative alias syntax (click to show) */
         /* Advanced resolve configuration (click to show) */
     },
-    performance: {
-        hints: "warning", // enum    maxAssetSize: 200000, // int (in bytes),
-        maxEntrypointSize: 200000, // int (in bytes)
-        assetFilter: function (assetFilename) {
-            // Function predicate that provides asset filenames
-            return assetFilename.endsWith('.js');
-        }
-    },
     devtool: "inline-source-map", // enum  // enhance debugging by adding meta info for the browser devtools
     // source-map most detailed at the expense of build speed.
     context: path.resolve(__dirname, '../'), // string (absolute path!)
@@ -123,14 +127,23 @@ module.exports = {
         hot: true, // hot module replacement. Depends on HotModuleReplacementPlugin
         https: false, // true for self-signed, object for cert authority
         noInfo: true, // only errors & warns on hot reload
+        open: true,
+        openPage: 'different/page'
         // publicPath: 'http://localhost:3000/dist/'
         // ...
     },
     plugins: [
+        // new BundleAnalyzerPlugin({analyzerPort: 8919}),
         new VueLoaderPlugin(),
+        new webpack.DllReferencePlugin({
+            manifest: require(path.join(__dirname, '..', 'vendor1-manifest.json'))
+        }),
         new HtmlWebpackPlugin({
-            title: 'Development',
-            template: 'index.html'
+            title: 'vue学习',
+            filename: 'index.html',
+            template: './dist/template.html',
+            inject: 'body',
+            hash: true
         }),
         new webpack.HotModuleReplacementPlugin()
     ]

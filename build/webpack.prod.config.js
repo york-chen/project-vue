@@ -2,6 +2,8 @@ const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
+// const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
 module.exports = {
     mode: "production", // "production" | "development" | "none"  // Chosen mode tells webpack to use its built-in optimizations accordingly.
@@ -127,13 +129,22 @@ module.exports = {
         // ...
     },
     plugins: [
+        // new BundleAnalyzerPlugin({analyzerPort: 8919}),
         new VueLoaderPlugin(),
+        new webpack.DllReferencePlugin({
+            manifest: require(path.join(__dirname, '..', 'vendor1-manifest.json')),
+        }),
         new MiniCssExtractPlugin({
             filename: 'app.css'
         }),
         new HtmlWebpackPlugin({
             title: 'Development',
-            template: 'index.html'
+            filename: "index.html",
+            template: './dist/template.html',
+            hash: true,
+            minify: {
+                removeAttributeQuotes: true//压缩 去掉引号
+            }
         })
     ]
 };
