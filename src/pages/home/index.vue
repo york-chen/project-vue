@@ -1,17 +1,8 @@
 <template>
-    <p>
-        hello gays!
-        <span>{{users.age}}!</span>
-    </p>
+        <div>hello gays!</div>
 </template>
 <script>
     export default {
-        props: {
-            users: {
-                type: Object,
-                require: true,
-                default: {name: 'york'}
-            }
-        }
+
     }
 </script>

@@ -2,7 +2,6 @@ const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const HappyPack = require('happypack');
 const os = require('os');
 const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
@@ -108,7 +107,7 @@ module.exports = {
         alias: {
             // a list of module name aliases
             "@": path.resolve(__dirname, '../src'),
-            'vue$': 'vue/dist/vue.esm.js',
+            'vue$': 'vue/dist/vue.esm.js'
         },
         /* alternative alias syntax (click to show) */
         /* Advanced resolve configuration (click to show) */
@@ -139,7 +138,6 @@ module.exports = {
         // ...
     },
     plugins: [
-        new BundleAnalyzerPlugin({analyzerPort: 8919}),
         new VueLoaderPlugin(),
         new webpack.DllReferencePlugin({
             manifest: require(path.join(__dirname, '..', 'vendor1-manifest.json'))

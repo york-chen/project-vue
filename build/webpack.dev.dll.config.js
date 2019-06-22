@@ -8,7 +8,7 @@ module.exports = {
     context: path.resolve(__dirname, '..'),
     mode: 'development',
     entry: {
-        vendor1: ['vue']
+        vendor1: ['vue','vue-router']
     },
     output: {
         path: path.resolve(__dirname, '../dist'),
