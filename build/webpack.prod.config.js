@@ -56,7 +56,7 @@ module.exports = {
                 // options for the loader
             },
             {
-                test: /\.(png|jpe?g|gif|svg)$/,
+                test: /\.(png|jpe?g|gif|svg|ttf|woff)$/,
                 include: [
                     path.resolve(__dirname, "../src")
                 ],

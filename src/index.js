@@ -1,12 +1,14 @@
 import Vue from 'vue'
-import App from './app.vue'
-import  router from '@/routes'
-import 'fullpage.js/vendors/scrolloverflow'
-import VueFullPage from 'vue-fullpage.js'
+import App from '@/app.vue'
+import router from '@/routes'
+import ElementUI from 'element-ui'
+import store from '@/store'
+import '@/app.css'
 
-Vue.use(VueFullPage);
+Vue.use(ElementUI);
 new Vue({
     router,
+    store,
     el: '#app',
     components: {App},
     template: '<App/>'

@@ -18,7 +18,7 @@ module.exports = {
         // must be an absolute path (use the Node.js path module)
         filename: "app.js", // string
         // the filename template for entry chunks
-        // publicPath: "/dist", // string    // the url to the output directory resolved relative to the HTML page
+        publicPath: "/", // string    // the url to the output directory resolved relative to the HTML page
     },
     module: {
         // configuration regarding modules
