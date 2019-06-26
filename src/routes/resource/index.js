@@ -18,7 +18,7 @@ export default [
         component: CategoryManage
     },
     {
-        path: 'list/:type',
+        path: 'list/:id',
         name: 'resourceList',
         component: DataList
     }

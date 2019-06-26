@@ -24,6 +24,15 @@
                     {required: true, message: '请输入类别名称', trigger: 'blur'}
                 ]
             }
+        },
+        methods:{
+            checkForm(){
+                let flag = false;
+                this.$refs['form'].validate((valid) => {
+                    flag = valid
+                });
+                return flag;
+            }
         }
     }
 </script>

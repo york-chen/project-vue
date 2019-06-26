@@ -19,6 +19,7 @@
                         </template>
                         <el-menu-item index="/resource/addCategory">新建分类</el-menu-item>
                         <el-menu-item index="/resource/categoryManage">管理分类</el-menu-item>
+                        <el-menu-item v-for="item in categoryManageList" :key="item.id" :index="`/resource/list/${item.id}`">{{item.name}}</el-menu-item>
                     </el-submenu>
                     <el-menu-item index="2">
                         <i class="el-icon-monitor"></i>
@@ -35,7 +36,6 @@
                 </el-menu>
             </el-aside>
             <el-main>
-                <div class="route-name">管理分类</div>
                 <router-view/>
             </el-main>
         </el-container>
@@ -43,12 +43,21 @@
 </template>
 
 <script>
+    import {createNamespacedHelpers} from 'vuex'
+
+    const {mapGetters, mapState, mapMutations, mapActions} = createNamespacedHelpers('resource');
+
     export default {
         name: "authenriedView",
         data() {
             return {
                 isCollapse: false
             }
+        },
+        computed:{
+          ...mapState({
+              categoryManageList: 'categoryManageList'
+          })
         },
         methods: {
             handleOpen(key, keyPath) {
