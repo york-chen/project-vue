@@ -6,7 +6,8 @@ const webpack = require('webpack');
 const HappyPack = require('happypack');
 const os = require('os');
 const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+// const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
     mode: "production", // "production" | "development" | "none"  // Chosen mode tells webpack to use its built-in optimizations accordingly.
@@ -18,9 +19,10 @@ module.exports = {
         path: path.resolve(__dirname, "../dist"), // string
         // the target directory for all output files
         // must be an absolute path (use the Node.js path module)
-        filename: "app.js", // string
+        filename: "app.[contenthash:8].js", // string
         // the filename template for entry chunks
-        // publicPath: "/dist", // string    // the url to the output directory resolved relative to the HTML page
+        publicPath: "/", // string    // the url to the output directory resolved relative to the HTML page
+        chunkFilename: "[name].[contenthash:8].js",
     },
     module: {
         // configuration regarding modules
@@ -64,7 +66,21 @@ module.exports = {
                 loader: "url-loader",
                 // options for the loader
                 options: {
-                    limit: 10000
+                    limit: 10000,
+                    name: 'static/images/[name].[contenthash:8].[ext]'
+                }
+            },
+            {
+                test: /\.(ttf|woff)$/,
+                include: [
+                    path.resolve(__dirname, "../src")
+                ],
+                // flags to apply these rules, even if they are overridden (advanced option)
+                loader: "url-loader",
+                // options for the loader
+                options: {
+                    limit: 10000,
+                    name: 'static/fonts/[name].[contenthash:8].[ext]'
                 }
             },
             {
@@ -99,6 +115,7 @@ module.exports = {
             // a list of module name aliases
             "@": path.resolve(__dirname, '../src'),
             'vue$': 'vue/dist/vue.esm.js',
+            'element-ui$': 'element-ui/lib/index.js'
         },
         /* alternative alias syntax (click to show) */
         /* Advanced resolve configuration (click to show) */
@@ -135,13 +152,18 @@ module.exports = {
         // ...
     },
     plugins: [
-        new BundleAnalyzerPlugin({analyzerPort: 8919}),
+        new CompressionPlugin({}),
+        // new BundleAnalyzerPlugin({analyzerPort: 8919}),
         new VueLoaderPlugin(),
         new webpack.DllReferencePlugin({
             manifest: require(path.join(__dirname, '..', 'vendor1-manifest.json')),
         }),
+        new webpack.DllReferencePlugin({
+            manifest: require(path.join(__dirname, '..', 'vendor2-manifest.json'))
+        }),
         new MiniCssExtractPlugin({
-            filename: 'app.css'
+            filename: 'app.[contenthash:8].css',
+            chunkFilename: "[name].[contenthash:8].css",
         }),
         new HtmlWebpackPlugin({
             title: 'Development',

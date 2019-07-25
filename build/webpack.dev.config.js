@@ -2,7 +2,6 @@ const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const HappyPack = require('happypack');
 const os = require('os');
 const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
@@ -17,9 +16,10 @@ module.exports = {
         path: path.resolve(__dirname, "../dist"), // string
         // the target directory for all output files
         // must be an absolute path (use the Node.js path module)
-        filename: "app.js", // string
+        filename: 'app.[hash].js', // string
         // the filename template for entry chunks
-        // publicPath: "/dist", // string    // the url to the output directory resolved relative to the HTML page
+        publicPath: "/", // string    // the url to the output directory resolved relative to the HTML page
+        chunkFilename: "[name].[chunkhash:8].js",
     },
     module: {
         // configuration regarding modules
@@ -61,12 +61,25 @@ module.exports = {
                 include: [
                     path.resolve(__dirname, "../src")
                 ],
-                exclude: /node_modules/,
                 // flags to apply these rules, even if they are overridden (advanced option)
                 loader: "url-loader",
                 // options for the loader
                 options: {
-                    limit: 10000
+                    limit: 10000,
+                    name: 'static/images/[name].[hash].[ext]'
+                }
+            },
+            {
+                test: /\.(ttf|woff)$/,
+                include: [
+                    path.resolve(__dirname, "../src")
+                ],
+                // flags to apply these rules, even if they are overridden (advanced option)
+                loader: "url-loader",
+                // options for the loader
+                options: {
+                    limit: 10000,
+                    name: 'static/fonts/[name].[hash].[ext]'
                 }
             },
             {
@@ -109,7 +122,8 @@ module.exports = {
             // a list of module name aliases
             "@": path.resolve(__dirname, '../src'),
             'vue$': 'vue/dist/vue.esm.js',
-        },
+            'element-ui$': 'element-ui/lib/index.js'
+        }
         /* alternative alias syntax (click to show) */
         /* Advanced resolve configuration (click to show) */
     },
@@ -124,7 +138,10 @@ module.exports = {
     stats: "errors-only",  // lets you precisely control what bundle information gets displayed
     devServer: {
         proxy: { // proxy URLs to backend development server
-            '/api': 'http://localhost:3000'
+            '/api': {
+                target: 'http://39.100.126.65:8190',
+                pathRewrite: {'^/api': ''}
+            }
         },
         port: 3000,
         contentBase: path.join(__dirname, '../dist'), // boolean | string | array, static file location
@@ -139,10 +156,12 @@ module.exports = {
         // ...
     },
     plugins: [
-        new BundleAnalyzerPlugin({analyzerPort: 8919}),
         new VueLoaderPlugin(),
         new webpack.DllReferencePlugin({
             manifest: require(path.join(__dirname, '..', 'vendor1-manifest.json'))
+        }),
+        new webpack.DllReferencePlugin({
+            manifest: require(path.join(__dirname, '..', 'vendor2-manifest.json'))
         }),
         new HtmlWebpackPlugin({
             title: 'vue学习',
